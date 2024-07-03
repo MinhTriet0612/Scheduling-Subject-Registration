@@ -17,19 +17,42 @@
 // @run-at       document-start
 // ==/UserScript==
 
+
+class Subject {
+    constructor(isChecked, subjectCode, subjectName, groupCode, classCode, startTime, endTime) {
+        this.subjectCode = subjectCode
+        this.subjectName = subjectName
+        this.groupCode = groupCode
+        this.classCode = classCode
+        this.startTime = startTime
+        this.endTime = endTime
+        this.isChecked = isChecked
+    }
+}
+
+const subjects = [];
 function scraptSubjects() {
     const tableSubjects = $('tbody')[0]
     const rows = tableSubjects.children
-
     for (var i = 0; i < rows.length; i++) {
-        var row = rows[i]
-        var subjectCode = row.children[1].innerText
-        var subjectName = row.children[2].innerText
-        var subjectCredit = row.children[3].innerText
-        var subjectStatus = row.children[4].innerText
-        console.log(subjectCode, subjectName, subjectCredit, subjectStatus)
+        subjects.push(new Subject(false,
+            rows[i].children[1].innerText,
+            rows[i].children[2].innerText,
+            rows[i].children[3].innerText,
+            rows[i].children[4].innerText,
+            rows[i].children[5].innerText,
+            rows[i].children[6].innerText))
     }
 }
+
+
+
+
+subjects.forEach(subject => {
+    console.log(JSON.stringify(subject))
+})
+
+
 
 // how to run this function when the page is loaded?
 
