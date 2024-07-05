@@ -1,3 +1,4 @@
+
 // ==UserScript==
 // @name         Scheduling Subject Registration
 // @namespace    http://tampermonkey.net/
@@ -285,8 +286,7 @@ window.onload = function() {
     const floatingButton = document.createElement('button');
     floatingButton.innerHTML = `<button class="float"><i class="fa fa-cogs"></i></button>`;
     floatingButton.onclick = function() {
-        scraptSubjects()
-        drawTable();
+        process()
     }
 
     document.body.appendChild(floatingButton)
@@ -294,23 +294,34 @@ window.onload = function() {
 
 }
 
+
+//////////////////////////////////////////////////////
+// Below block for listening any event 
+//
+document.addEventListener('click', function(e) {
+    e = e || window.event;
+    var target = e.target || e.srcElement,
+        text = target.textContent || target.innerText;
+    console.log(text + " " + target.className + " - " + target)
+    const key = target.getAttribute("key")
+    console.log(key)
+
+}, false);
+
+
+document.addEventListener('change', function(e) {
+    e = e || window.event;
+    var target = e.target || e.srcElement,
+        text = target.textContent || target.innerText;
+    console.log(text + " " + target.className + " - " + target)
+    const key = target.getAttribute("key")
+    console.log(key);
+})
+
+
+//////////////////////////////////////////////
+
 var specialValue = 55546;
-class Component { // component for holding table data
-    constructor(data) {
-        this.data = {}
-    }
-
-    setData(data) {
-        this.element = document.createElement('div')
-        this.element.innerHTML = this.template()
-    }
-}
-
-this.setData = function(data) {
-    this.render()
-    this.data = data
-}
-
 
 
 class Subject {
@@ -325,22 +336,14 @@ class Subject {
 }
 
 
-class Schedule {
-    constructor(startTime, endTime, classPeriods) {
-        this.startTime = startTime
-        this.endTime = endTime
-        this.classPeriods = classPeriods
-    }
-}
-
 
 const subjects = new Map();
+const nameStoring = new Map();
 
 function scraptSubjects() {
-
+    let nameStoring = new Map();
+    unsafeWindow.subjects = subjects;
     $(".custom-control").attr("style", "display :none !important");
-
-
     const tableSubjects = $('tbody')[0]
     const rows = tableSubjects.children
 
@@ -354,6 +357,8 @@ function scraptSubjects() {
             rows[i].children[6].innerText,
             rows[i].children[9].innerText
         )
+
+        nameStoring.set(subject.subjectCode, subject.subjectName)
 
         const key = subject.subjectCode + subject.groupCode + subject.teamCode
         subjects.set
@@ -376,26 +381,14 @@ function scraptSubjects() {
     // add dropdown
     var dropDown = $(".dropdownlecture");
     dropDown.empty();
-    dropDown.append('<option value ="" class ="label_dropdownlecture">Ch·ªçn m√¥n h·ªçc</option>');
+    dropDown.append('<option value ="all" class ="">All</option>');
 
-    subjects.forEach((value, key) => {
-        dropDown.append('<option value="' + key + '">' + value.subjectName + '</option>');
-    })
+    for (let [key, value] of nameStoring) {
+        dropDown.append(`<option value ="${key}">${key} ${value}</option>`);
+    }
 
-
+    // dropDown.append('<option value ="' + key + '">' + value.subjectName + '</option>');
 }
-
-
-
-document.addEventListener('click', function (e) {
-    e = e || window.event;
-    var target = e.target || e.srcElement,
-        text = target.textContent || target.innerText;
-    console.log(text + " " + target.className + " - " + target)
-    const key = target.getAttribute("key")
-    console.log(key)
-
-}, false);
 
 
 
@@ -436,43 +429,69 @@ function reformatTimeTable(str) {
     });
 }
 
+
 function drawTable() {
-    let rows = 14; //14 ti?t
-    let cols = 80;
-    let tables = []
+    // let rows = 14; //14 tiết
+    // let cols = 80;
+    // let tables = []
     let tkb_div = $('<div id="tkb_div" class="row d-flex justify-content-center pt-1"></div>')
 
-    for (let i = 1; i <= 2; i++) {
-        let count = 0;
-        let table_id = "tkbPreview" + i;
-        tables[i] = $('<table style="z-index:-100;table-layout:fixed;text-align:center;border-collapse: collapse;" class="tkb_preview_table" id=' + table_id + '><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th> </thead><tbody>');
-        let tkb_separator, start_time_in_hr;
-        for (let r = 0; r < rows; r++) {
-            if (r % 2) tkb_separator = 'border-bottom:2px solid #ad171c;'
-            else tkb_separator = '';
-            start_time_in_hr = r + 7;
-            let tr = $('<tr style="height:1px;' + tkb_separator + '"><td class="starttimerow">' + start_time_in_hr + '</td>');
-            for (let c = 0; c < cols; c++) {
-                if ((c + 1) % 8) {
-                    count++;
-                    $('<td class="cellqh" id="' + (70 * (i - 1) * 14 + count + specialValue) + '">' + "+" + '<span class="tooltiptext"></span></td>').appendTo(tr);
-                } else {
-                    //divider
-                    $('<td style="height:0px; width: 15px; background-color: #fff"></td>').appendTo(tr);
-                }
-            }
-            tr.appendTo(tables[i]);
-        }
+    // for (let i = 1; i <= 2; i++) {
+    //     let count = 0;
+    //     let table_id = "tkbPreview" + i;
+    //     tables[i] = $('<table style="z-index:-100;table-layout:fixed;text-align:center;border-collapse: collapse;" class="tkb_preview_table" id=' + table_id + '><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th> </thead><tbody>');
+    //     let tkb_separator, start_time_in_hr;
+    //     for (let r = 0; r < rows; r++) {
+    //         if (r % 2) tkb_separator = 'border-bottom:2px solid #ad171c;'
+    //         else tkb_separator = '';
+    //         start_time_in_hr = r + 7;
+    //         //Thêm hàng, thời gian bắt đầu tiết
+    //         let tr = $('<tr style="height:1px;' + tkb_separator + '"><td class="starttimerow">' + start_time_in_hr + '</td>');
+    //         for (let c = 0; c < cols; c++) {
+    //             if ((c + 1) % 8) {
+    //                 count++;
+    //                 $('<td class="cellqh" id="' + (70 * (i - 1) * 14 + count + specialValue) + '">' + "+" + '<span class="tooltiptext"></span></td>').appendTo(tr);
+    //             } else {
+    //                 //divider
+    //                 $('<td style="height:0px; width: 15px; background-color: #fff"></td>').appendTo(tr);
+    //             }
+    //         }
+    //         tr.appendTo(tables[i]);
+    //     }
+    //
+    //
+    // $('</tbody></table>').appendTo(tables[i]);
+    // tkb_div.append(tables[i])
 
+    // }
+    tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date" value="2023-08-14"></input><br></div>');
+    tkb_div.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>')
+    tkb_div.append('<div class="danhsachmonhoc_text"><strong>Các môn đã đăng ký<strong></div>')
+    tkb_div.append('<div class="danhsachmonhoc"></div>')
 
-        $('</tbody></table>').appendTo(tables[i]);
-        tkb_div.append(tables[i])
-
-    }
+    //Thêm vào trang
     $("div.card-body.p-0 div.row.d-flex.justify-content-center.text-nowrap.pt-1").prepend(tkb_div)
+    console.log("Đã thêm bảng TKB")
 
 }
 
 
 
+function handleDropdownClicking() {
 
+
+}
+
+function process() {
+    if (
+        $('#tkb_div').length == 0
+    ) {
+        drawTable()
+    }
+
+    if (
+        subjects.size == 0 && nameStoring.size == 0
+    ) {
+        scraptSubjects()
+    }
+}
