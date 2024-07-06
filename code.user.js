@@ -358,8 +358,7 @@ function scraptSubjects() {
             rows[i].children[9].innerText
         )
 
-        nameStoring.set(subject.subjectCode, subject.subjectName)
-
+        nameStoring.set(rows[i].children[1].innerText, rows[i].children[2].innerText)
         const key = subject.subjectCode + subject.groupCode + subject.teamCode
         subjects.set
             (
@@ -379,13 +378,13 @@ function scraptSubjects() {
     })
 
     // add dropdown
-    var dropDown = $(".dropdownlecture");
-    dropDown.empty();
-    dropDown.append('<option value ="all" class ="">All</option>');
-
-    for (let [key, value] of nameStoring) {
-        dropDown.append(`<option value ="${key}">${key} ${value}</option>`);
-    }
+    // var dropDown = $(".dropdownlecture");
+    // dropDown.empty();
+    // dropDown.append('<option value ="all" class ="">All</option>');
+    //
+    // for (let [key, value] of nameStoring) {
+    //     dropDown.append(`<option value ="${key}">${key} ${value}</option>`);
+    // }
 
     // dropDown.append('<option value ="' + key + '">' + value.subjectName + '</option>');
 }
