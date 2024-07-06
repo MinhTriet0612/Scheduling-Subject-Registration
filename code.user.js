@@ -237,7 +237,6 @@ GM_addStyle(`
 `)
 
 {
-
     function useState(initialValue) {
         let state = initialValue;
         const listeners = [];
@@ -277,7 +276,6 @@ GM_addStyle(`
     });
 }
 
-
 window.onload = function() {
     unsafeWindow.scraptSubjects = scraptSubjects;
     unsafeWindow.drawTable = drawTable;
@@ -292,8 +290,6 @@ window.onload = function() {
         process()
         ensureDropdownEventListener()
         ensureCheckBoxEventListener()
-
-
     }
 
     document.body.appendChild(floatingButton)
@@ -301,13 +297,8 @@ window.onload = function() {
 
 }
 
-
-
-
-
 //////////////////////////////////////////////////////
-// Below block for listening any event
-//
+
 document.addEventListener('click', function(e) {
     e = e || window.event;
     var target = e.target || e.srcElement,
@@ -317,10 +308,6 @@ document.addEventListener('click', function(e) {
     console.log(key)
 
 }, false);
-
-
-// tracking event of changing my dropdown
-
 
 //////////////////////////////////////////////
 
