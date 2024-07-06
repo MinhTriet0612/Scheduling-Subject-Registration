@@ -1,4 +1,3 @@
-
 // ==UserScript==
 // @name         Scheduling Subject Registration
 // @namespace    http://tampermonkey.net/
@@ -7,7 +6,7 @@
 // @author       You
 // @match        https://uis.ptithcm.edu.vn/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @require      http://code.jquery.com/jquery-2.1.0.min.js
+// @require      http://code.jquery.com/jquery-3.6.0.min.js
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -282,11 +281,19 @@ GM_addStyle(`
 window.onload = function() {
     unsafeWindow.scraptSubjects = scraptSubjects;
     unsafeWindow.drawTable = drawTable;
+    unsafeWindow.process = process;
+    unsafeWindow.ensureDropdownEventListener = ensureDropdownEventListener
+    unsafeWindow.ensureCheckBoxEventListener = ensureCheckBoxEventListener
+
 
     const floatingButton = document.createElement('button');
     floatingButton.innerHTML = `<button class="float"><i class="fa fa-cogs"></i></button>`;
     floatingButton.onclick = function() {
         process()
+        ensureDropdownEventListener()
+        ensureCheckBoxEventListener()
+
+
     }
 
     document.body.appendChild(floatingButton)
@@ -295,8 +302,11 @@ window.onload = function() {
 }
 
 
+
+
+
 //////////////////////////////////////////////////////
-// Below block for listening any event 
+// Below block for listening any event
 //
 document.addEventListener('click', function(e) {
     e = e || window.event;
@@ -309,14 +319,7 @@ document.addEventListener('click', function(e) {
 }, false);
 
 
-document.addEventListener('change', function(e) {
-    e = e || window.event;
-    var target = e.target || e.srcElement,
-        text = target.textContent || target.innerText;
-    console.log(text + " " + target.className + " - " + target)
-    const key = target.getAttribute("key")
-    console.log(key);
-})
+// tracking event of changing my dropdown
 
 
 //////////////////////////////////////////////
@@ -331,7 +334,7 @@ class Subject {
         this.groupCode = groupCode
         this.teamCode = teamCode.trim().length >= 1 ? teamCode : ''
         this.classCode = classCode
-        this.timeTable = reformatTimeTable(timeTable)
+        this.timeTable = reformatRoutine(timeTable)
     }
 }
 
@@ -359,6 +362,8 @@ function scraptSubjects() {
         )
 
         nameStoring.set(rows[i].children[1].innerText, rows[i].children[2].innerText)
+
+
         const key = subject.subjectCode + subject.groupCode + subject.teamCode
         subjects.set
             (
@@ -368,7 +373,7 @@ function scraptSubjects() {
 
         // modify checkbox
         let form = $(rows[i]).find("form")
-        let tag = `<input type='checkbox' class='editTKBcheckbox' key="${key}">`
+        let tag = `<input type='checkbox' class='editCheckBoxInput' value="${key}">`
         form.append(tag)
 
     }
@@ -378,55 +383,142 @@ function scraptSubjects() {
     })
 
     // add dropdown
-    // var dropDown = $(".dropdownlecture");
-    // dropDown.empty();
-    // dropDown.append('<option value ="all" class ="">All</option>');
-    //
-    // for (let [key, value] of nameStoring) {
-    //     dropDown.append(`<option value ="${key}">${key} ${value}</option>`);
-    // }
+    var dropDown = $(".dropdownlecture");
+    dropDown.empty();
+    dropDown.append('<option value ="all" class ="">All</option>');
+
+    for (let [key, value] of nameStoring) {
+        dropDown.append(`<option value ="${key}">${key} ${value}</option>`);
+    }
 
     // dropDown.append('<option value ="' + key + '">' + value.subjectName + '</option>');
 }
 
 
+function ensureDropdownEventListener() {
+    var timer = setInterval(() => {
+        var inputEle;
+        if ($('.dropdownlecture').length == 0) {
+            return;
+        }
 
+        else {
+            $(".dropdownlecture").change(function(event) {
+                if (inputEle == undefined) {
+                    inputEle = document.getElementsByClassName("form-control form-control-sm small text-secondary ng-untouched ng-pristine ng-valid")[0]
+                }
 
-function reformatTimeTable(str) {
-    str = str.toLowerCase();
+                if (event.target.value == "all") {
+                    inputEle.value = "";
+                }
+                else {
+                    inputEle.value = event.target.value
+                }
 
-    const dayInWeek = new Map([
-        ["thứ 2", 2],
-        ["thứ 3", 3],
-        ["thứ 4", 4],
-        ["thứ 5", 5],
-        ["thứ 6", 6],
-        ["thứ 7", 7],
-        ["chủ nhật", 8]
-    ]);
+                const inputEvent = new Event('input', {
+                    bubbles: true,
+                    cancelable: true,
+                });
+                inputEle.dispatchEvent(inputEvent);
 
-
-
-    return str.split("\n").map((item) => {
-        let [day, time, date] = item.split(",");
-        let [start, end] = date.split("đến");
-        let [startDay, startMonth, startYear] = start.split("/");
-        let [endDay, endMonth, endYear] = end.split("/");
-
-        // "24(TH)" -> 24
-        endYear = endYear.replace(/\D/g, "");
-
-
-        time = time.replace("tiết", "").trim().split("->").map((item) => parseInt(item));
-
-        return {
-            day: dayInWeek.get(day),
-            time: time,
-            start: new Date('20' + startYear, startMonth, startDay),
-            end: new Date('20' + endYear, endMonth, endDay)
-        };
-    });
+            })
+            clearInterval(timer);
+        }
+    }, 200)
 }
+
+function ensureCheckBoxEventListener() {
+    var timer = setInterval(() => {
+        if ($('.editCheckBoxInput').length == 0) {
+            return;
+        }
+        else {
+            $('.editCheckBoxInput').change(function(event) {
+                const key = event.target.value
+                const subject = subjects.get(key)
+                console.log(subject)
+                // if (event.target.checked) {
+                //     drawSubject(subject)
+                // } else {
+                //     removeSubject(subject)
+                // }
+
+                if (event.target.checked) {
+                    // drawSubject(subject)
+                    console.log("checked")
+                }
+                else {
+                    // removeSubject(subject)
+                    console.log("unchecked")
+                }
+            })
+            clearInterval(timer);
+        }
+    }, 200)
+}
+
+
+function reformatRoutine(str) {
+    try {
+        if (str.trim() == "")
+            return [];
+
+        str = str.toLowerCase();
+
+        const dayInWeek = new Map([
+            ["thứ 2", 2],
+            ["thứ 3", 3],
+            ["thứ 4", 4],
+            ["thứ 5", 5],
+            ["thứ 6", 6],
+            ["thứ 7", 7],
+            ["chủ nhật", 8]
+        ]);
+
+
+        return str.split("\n").map((item) => {
+            if (item.indexOf("đến") == -1) {
+                let [day, time, date] = item.split(",");
+                let [startDay, startMonth, startYear] = date.split("/");
+                let [start, end] = time.replace("tiết", "").trim().split("->").map((item) => parseInt(item));
+                startYear = startYear.replace(/\D/g, "");
+
+                return {
+                    day: dayInWeek.get(day),
+                    time: [start, end],
+                    start: new Date('20' + startYear, startMonth, startDay),
+                    end: new Date('20' + startYear, startMonth, startDay)
+                };
+            }
+
+            let [day, time, date] = item.split(",");
+            let [start, end] = date.split("đến");
+            let [startDay, startMonth, startYear] = start.split("/");
+            let [endDay, endMonth, endYear] = end.split("/");
+            endYear = endYear.replace(/\D/g, "");
+
+            time = time.replace("tiết", "").trim().split("->").map((item) => parseInt(item));
+
+            return {
+                day: dayInWeek.get(day),
+                time: time,
+                start: new Date('20' + startYear, startMonth, startDay),
+                end: new Date('20' + endYear, endMonth, endDay)
+            };
+
+
+        });
+
+    } catch (e) {
+        console.log(e);
+        return [];
+    }
+}
+
+
+
+
+
 
 
 function drawTable() {
@@ -476,11 +568,6 @@ function drawTable() {
 
 
 
-function handleDropdownClicking() {
-
-
-}
-
 function process() {
     if (
         $('#tkb_div').length == 0
@@ -494,3 +581,4 @@ function process() {
         scraptSubjects()
     }
 }
+
