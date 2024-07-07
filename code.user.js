@@ -236,52 +236,11 @@ GM_addStyle(`
     }
 `)
 
-{
-    function useState(initialValue) {
-        let state = initialValue;
-        const listeners = [];
-
-        function setState(newValue) {
-            state = newValue;
-            listeners.forEach(listener => listener(state));
-        }
-
-        function getState() {
-            return state;
-        }
-
-        function subscribe(listener) {
-            listeners.push(listener);
-        }
-
-        return [getState, setState, subscribe];
-    }
-
-    // Initialize state
-    const [getCount, setCount, subscribe] = useState(0);
-
-    // Function to render the component
-    function render() {
-        $('#app').html(`<p>Count: ${getCount()}</p>`);
-    }
-    // Subscribe render function to state changes
-    subscribe(render);
-
-    // Initial render
-    render();
-
-    // Event listener to modify state
-    $('#increment-button').click(function() {
-        setCount(getCount() + 1);
-    });
-}
 
 window.onload = function() {
     unsafeWindow.scraptSubjects = scraptSubjects;
     unsafeWindow.drawTable = drawTable;
     unsafeWindow.process = process;
-    unsafeWindow.ensureDropdownEventListener = ensureDropdownEventListener
-    unsafeWindow.ensureCheckBoxEventListener = ensureCheckBoxEventListener
 
 
     const floatingButton = document.createElement('button');
@@ -294,7 +253,6 @@ window.onload = function() {
 
     document.body.appendChild(floatingButton)
     // we have input's class name, so how to combine with?
-
 }
 
 //////////////////////////////////////////////////////
@@ -327,8 +285,10 @@ class Subject {
 
 
 
+const registeredSubjects = new Map();
 const subjects = new Map();
 const nameStoring = new Map();
+const storeCheckedSubjects = new Set();
 
 function scraptSubjects() {
     let nameStoring = new Map();
@@ -348,6 +308,7 @@ function scraptSubjects() {
             rows[i].children[9].innerText
         )
 
+
         nameStoring.set(rows[i].children[1].innerText, rows[i].children[2].innerText)
 
 
@@ -362,7 +323,6 @@ function scraptSubjects() {
         let form = $(rows[i]).find("form")
         let tag = `<input type='checkbox' class='editCheckBoxInput' value="${key}">`
         form.append(tag)
-
     }
 
     subjects.forEach((value, key) => {
@@ -382,32 +342,34 @@ function scraptSubjects() {
 }
 
 
+
 function ensureDropdownEventListener() {
+            var inputEle;
+
     var timer = setInterval(() => {
-        var inputEle;
         if ($('.dropdownlecture').length == 0) {
             return;
         }
-
         else {
             $(".dropdownlecture").change(function(event) {
+
+
                 if (inputEle == undefined) {
                     inputEle = document.getElementsByClassName("form-control form-control-sm small text-secondary ng-untouched ng-pristine ng-valid")[0]
                 }
-
                 if (event.target.value == "all") {
                     inputEle.value = "";
                 }
                 else {
                     inputEle.value = event.target.value
                 }
-
                 const inputEvent = new Event('input', {
                     bubbles: true,
                     cancelable: true,
                 });
                 inputEle.dispatchEvent(inputEvent);
 
+                reinitializeCheckboxInput();
             })
             clearInterval(timer);
         }
@@ -420,29 +382,42 @@ function ensureCheckBoxEventListener() {
             return;
         }
         else {
-            $('.editCheckBoxInput').change(function(event) {
+            $(".editCheckBoxInput").change(function(event) {
                 const key = event.target.value
+                console.log(key);
                 const subject = subjects.get(key)
-                console.log(subject)
-                // if (event.target.checked) {
-                //     drawSubject(subject)
-                // } else {
-                //     removeSubject(subject)
-                // }
 
                 if (event.target.checked) {
-                    // drawSubject(subject)
-                    console.log("checked")
+                    if (registeredSubjects.has(subject.subjectCode)) {
+                        alert("Môn học đã được đăng ký");
+                        $(event.target).prop('checked', false);
+                    }
+                    else {
+                        registeredSubjects.set(subject.subjectCode, subject);
+                        storeCheckedSubjects.add(key);
+                        $(".danhsachmonhoc").empty();
+
+                        for (let [key, value] of registeredSubjects) {
+                            $(".danhsachmonhoc").append(`<div class="${value.subjectCode}">${value.subjectCode} | ${value.subjectName} | ${value.classCode}</div>`);
+                        }
+                    }
                 }
                 else {
-                    // removeSubject(subject)
-                    console.log("unchecked")
+                    registeredSubjects.delete(subject.subjectCode);
+                    storeCheckedSubjects.delete(key);
+                    $(".danhsachmonhoc").empty();
+
+                    for (let [key, value] of registeredSubjects) {
+                        $(".danhsachmonhoc").append(`<div class="${value.subjectCode}">${value.subjectCode} | ${value.subjectName} | ${value.classCode}</div>`);
+                    }
                 }
             })
+
             clearInterval(timer);
         }
     }, 200)
 }
+
 
 
 function reformatRoutine(str) {
@@ -501,6 +476,7 @@ function reformatRoutine(str) {
         return [];
     }
 }
+
 
 
 
@@ -568,4 +544,40 @@ function process() {
         scraptSubjects()
     }
 }
+
+
+function reinitializeCheckboxInput() {
+    // wait for the input to be loaded
+
+    var timer = setInterval(() => {
+        if ($('.editCheckBoxInput').length == 0) {
+            return;
+        }
+
+        else {
+            const tableSubjects = $('tbody')[0]
+            const rows = tableSubjects.children
+            // delete all checkbox
+            // delete all checkbox, consist old or new
+            //
+            for (let i = 0; i < rows.length; i++) {
+                let form = $(rows[i]).find("form")
+                // replace this input with new input
+                let key = rows[i].children[1].innerText + rows[i].children[3].innerText + rows[i].children[4].innerText;
+
+                let currTag = $(form).find("input");
+
+                currTag.attr("value", key);
+                if (storeCheckedSubjects.has(key)) {
+                    currTag.prop('checked', true);
+                }
+                else {
+                    currTag.prop('checked', false);
+                }
+            }
+            clearInterval(timer);
+        }
+    }, 200)
+}
+
 
