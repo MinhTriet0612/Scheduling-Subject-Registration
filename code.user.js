@@ -7,8 +7,6 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @require      http://code.jquery.com/jquery-3.6.0.min.js
 // @grant        GM_addStyle
-// @grant        GM_getValue
-// @grant        GM_setValue
 // @grant        unsafeWindow
 // @run-at       document-start
 
