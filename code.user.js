@@ -44,7 +44,7 @@ GM_addStyle(`
     }
 
 
-    /* D?u m?t */
+  
     html {
         background: #f2f2f2;
     }
@@ -85,12 +85,15 @@ GM_addStyle(`
         line-height: 1.1em;
       }
     .float:hover {
-        transform: rotate(45deg);
-        box-shadow: 0 0 1px 15px rgba(138, 59, 88, 0.4), 0 0 1px 30px rgba(138, 59, 88, 0.1), 0 0 1px 45px rgba(138, 59, 88, 0.1);
-      }
+        box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.22) rgba(0, 0, 0, 0.36) rgba(0, 0, 0, 0.3) !important;
+
+        transform: scale(1.05);
+
+    }
 
     .editTKB {
-        background-color:#AD171C !important;
+        background-color:#2fa4e7 !important;
+
     }
 
     .editTKB > i {
@@ -114,7 +117,8 @@ GM_addStyle(`
     }
 
     .tkb_preview_table > thead {
-        background-color: #AD171C;
+        background-color: #2fa4e7;
+
     }
 
     .tkb_preview_table > thead > tr > th {
@@ -125,11 +129,14 @@ GM_addStyle(`
 
     .cellqh {
         border: 1px solid green;
-        max-width: 8px;
-        max-height: 8px;
-        font-size: 8px;
+        max-width: 14px;
+        max-height: 6px;
+        font-size: 13px;
         position: relative;
         border-bottom: 1px dotted black;
+        padding: 2px;
+        text-align: center;
+
     }
 
     .tooltiptext {
@@ -160,8 +167,8 @@ GM_addStyle(`
     .starttimerow {
         padding: 1px;
         vertical-align: middle;
-        border-top: 0.2px solid #edeef2;
-        background-color: #AD171C;
+        border-top: 0.2px solid #2fa4e7;
+        background-color: #2fa4e7;
         color: #fff;
         max-width: 30px;
         max-height: 10px;
@@ -179,6 +186,8 @@ GM_addStyle(`
         justify-content: center;
         margin-left: auto;
         margin-right: auto;
+        margin-top: 30px;
+
     }
 
     .danhsachmonhoc {
@@ -234,7 +243,63 @@ GM_addStyle(`
         padding: 2px;
         left: 4px;
     }
-`)
+
+    .timetables {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .timetable-container {
+            width: calc(100% / 5 - 20px);
+            margin: 10px;
+        }
+
+        .timetable-container h2 {
+            text-align: center;
+        }
+
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .timetable th, .timetable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .timetable th {
+            background-color: #f2f2f2;
+        }
+
+        @media (max-width: 1200px) {
+            .timetable-container {
+                width: calc(100% / 4 - 20px);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .timetable-container {
+                width: calc(100% / 3 - 20px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .timetable-container {
+                width: calc(100% / 2 - 20px);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .timetable-container {
+                width: 100%;
+            }
+        }
+    `);
+
 
 
 window.onload = function() {
@@ -246,6 +311,9 @@ window.onload = function() {
     const floatingButton = document.createElement('button');
     floatingButton.innerHTML = `<button class="float"><i class="fa fa-cogs"></i></button>`;
     floatingButton.onclick = function() {
+        var float = $(".float");
+        float.addClass("editTKB");
+
         process()
         ensureDropdownEventListener()
         ensureCheckBoxEventListener()
@@ -254,22 +322,6 @@ window.onload = function() {
     document.body.appendChild(floatingButton)
     // we have input's class name, so how to combine with?
 }
-
-//////////////////////////////////////////////////////
-
-document.addEventListener('click', function(e) {
-    e = e || window.event;
-    var target = e.target || e.srcElement,
-        text = target.textContent || target.innerText;
-    console.log(text + " " + target.className + " - " + target)
-    const key = target.getAttribute("key")
-    console.log(key)
-
-}, false);
-
-//////////////////////////////////////////////
-
-var specialValue = 55546;
 
 
 class Subject {
@@ -289,12 +341,16 @@ const registeredSubjects = new Map();
 const subjects = new Map();
 const nameStoring = new Map();
 const storeCheckedSubjects = new Set();
+let dateStart = new Date( '2024-08-12' );
+
+const tables = Array.from({ length: 32 }, () => Array.from({ length: 14 }, () => Array.from({ length: 7 }, () => [])));
+
 
 function scraptSubjects() {
     let nameStoring = new Map();
     unsafeWindow.subjects = subjects;
     $(".custom-control").attr("style", "display :none !important");
-    const tableSubjects = $('tbody')[0]
+    const tableSubjects = $('tbody')[32]
     const rows = tableSubjects.children
 
     for (let i = 0; i < rows.length; i++) {
@@ -314,10 +370,10 @@ function scraptSubjects() {
 
         const key = subject.subjectCode + subject.groupCode + subject.teamCode
         subjects.set
-            (
-                key,
-                subject
-            ); // key -value
+        (
+            key,
+            subject
+        ); // key -value
 
         // modify checkbox
         let form = $(rows[i]).find("form")
@@ -338,13 +394,14 @@ function scraptSubjects() {
         dropDown.append(`<option value ="${key}">${key} ${value}</option>`);
     }
 
-    // dropDown.append('<option value ="' + key + '">' + value.subjectName + '</option>');
+    alert("Đã tải xong dữ liệu môn học");
+
 }
 
 
 
 function ensureDropdownEventListener() {
-            var inputEle;
+    let inputEle;
 
     var timer = setInterval(() => {
         if ($('.dropdownlecture').length == 0) {
@@ -369,15 +426,16 @@ function ensureDropdownEventListener() {
                 });
                 inputEle.dispatchEvent(inputEvent);
 
-                reinitializeCheckboxInput();
+                reinitializeCheckboxInput()
+
             })
             clearInterval(timer);
         }
     }, 200)
-}
+    }
 
 function ensureCheckBoxEventListener() {
-    var timer = setInterval(() => {
+    var time = setInterval(() => {
         if ($('.editCheckBoxInput').length == 0) {
             return;
         }
@@ -393,6 +451,9 @@ function ensureCheckBoxEventListener() {
                         $(event.target).prop('checked', false);
                     }
                     else {
+                        console.log(subject)
+                        addSubjectToTable(subject);
+
                         registeredSubjects.set(subject.subjectCode, subject);
                         storeCheckedSubjects.add(key);
                         $(".danhsachmonhoc").empty();
@@ -400,11 +461,16 @@ function ensureCheckBoxEventListener() {
                         for (let [key, value] of registeredSubjects) {
                             $(".danhsachmonhoc").append(`<div class="${value.subjectCode}">${value.subjectCode} | ${value.subjectName} | ${value.classCode}</div>`);
                         }
+
+
+
                     }
                 }
                 else {
                     registeredSubjects.delete(subject.subjectCode);
                     storeCheckedSubjects.delete(key);
+                    removeSubjectFromTable(subject);
+
                     $(".danhsachmonhoc").empty();
 
                     for (let [key, value] of registeredSubjects) {
@@ -413,10 +479,122 @@ function ensureCheckBoxEventListener() {
                 }
             })
 
-            clearInterval(timer);
+            clearInterval(time);
         }
     }, 200)
+    }
+
+
+
+
+function addSubjectToTable(subject) {
+    // add to table times
+    subject.timeTable.forEach((item) => {
+        console.log(item);
+        let distanceStart = caculateDistanceTwoDays(item.start, dateStart);
+        let distanceEnd = caculateDistanceTwoDays(item.end, dateStart);
+        let day = item.day;
+
+        let start = Math.floor(distanceStart / 7);
+        let end = Math.floor(distanceEnd / 7);
+
+        console.log(start, end);
+
+        while (start <= end) {
+            for (let i = item.time[0] - 1; i <= item.time[1] - 1; i++) {
+                tables[start][i][day - 2].push({
+                    subjectCode: subject.subjectCode,
+                    subjectName: subject.subjectName,
+                    classCode: subject.classCode
+                });
+                // console.log(`start: ${start} i: ${i} day: ${day} subject: ${subject.subjectCode}  tables: ${tables[start][i][day]}`)
+            }
+            start++;
+        }
+    })
+    updateTable(tables)
 }
+
+
+function removeSubjectFromTable(subject) {
+    // remove from table times
+
+    subject.timeTable.forEach((item) => {
+        let distanceStart = caculateDistanceTwoDays(item.start, dateStart);
+        let distanceEnd = caculateDistanceTwoDays(item.end, dateStart);
+        let day = item.day;
+
+        let start = Math.floor(distanceStart / 7);
+        let end = Math.floor(distanceEnd / 7);
+
+
+        while (start <= end) {
+            for (let i = item.time[0] - 1; i <= item.time[1] - 1; i++) {
+                let index = tables[start][i][day - 2].findIndex((item) => item.subjectCode == subject.subjectCode)
+                tables[start][i][day - 2].splice(index, 1);
+            }
+            start++;
+        }
+
+    })
+    updateTable(tables)
+
+}
+function updateTable(tables) {
+    const states = {
+        available: {
+            color: "white",
+            icon: "+",
+            colorText: "black"
+        },
+
+        full: {
+            // don't have any subject
+            color: 'green',
+            icon: "o",
+            colorText: "white"
+        },
+
+        // have one subject
+        // have more than one subject
+        over: {
+            color: 'red',
+            icon: "x",
+            colorText: "white"
+        }
+    }
+
+    for (let i = 0; i < 32; i++) {
+        for (let r = 0; r < 14; r++) {
+            for (let c = 0; c < 7; c++) {
+                let id = "tkb" + i + r + c;
+                let cell = $(`#${id}`);
+
+                let state = states.available;
+                if (tables[i][r][c].length == 1) {
+                    state = states.full;
+                }
+                else if (tables[i][r][c].length > 1) {
+                    state = states.over;
+                }
+
+                let hoverText = tables[i][r][c].map((item) => {
+                    return `${item.subjectCode} - ${item.subjectName} - ${item.classCode}`
+                }).join("\n")
+                cell.css('background-color', state.color);
+                cell.css('color', state.colorText);
+                cell.text(state.icon);
+                cell.attr('title', hoverText );
+
+                // hover event for cell
+            }
+        }
+
+    }
+}
+
+
+
 
 
 
@@ -448,8 +626,8 @@ function reformatRoutine(str) {
                 return {
                     day: dayInWeek.get(day),
                     time: [start, end],
-                    start: new Date('20' + startYear, startMonth, startDay),
-                    end: new Date('20' + startYear, startMonth, startDay)
+                    start: new Date(`20${startYear.trim()}-${startMonth.trim()}-${startDay.trim()}`),
+                    end: new Date(`20${startYear.trim()}-${startMonth.trim()}-${startDay.trim()}`)
                 };
             }
 
@@ -464,8 +642,8 @@ function reformatRoutine(str) {
             return {
                 day: dayInWeek.get(day),
                 time: time,
-                start: new Date('20' + startYear, startMonth, startDay),
-                end: new Date('20' + endYear, endMonth, endDay)
+                start: new Date(`20${startYear.trim()}-${startMonth.trim()}-${startDay.trim()}`),
+                end: new Date(`20${endYear.trim()}-${endMonth.trim()}-${endDay.trim()}`)
             };
 
 
@@ -480,70 +658,93 @@ function reformatRoutine(str) {
 
 
 
-
-
-
-
 function drawTable() {
-    // let rows = 14; //14 tiết
-    // let cols = 80;
-    // let tables = []
-    let tkb_div = $('<div id="tkb_div" class="row d-flex justify-content-center pt-1"></div>')
+    let rows = 14; // Number of rows representing the periods
+    let cols = 7; // Number of columns representing the days
+    let tables = [];
 
-    // for (let i = 1; i <= 2; i++) {
-    //     let count = 0;
-    //     let table_id = "tkbPreview" + i;
-    //     tables[i] = $('<table style="z-index:-100;table-layout:fixed;text-align:center;border-collapse: collapse;" class="tkb_preview_table" id=' + table_id + '><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>|</th> </thead><tbody>');
-    //     let tkb_separator, start_time_in_hr;
-    //     for (let r = 0; r < rows; r++) {
-    //         if (r % 2) tkb_separator = 'border-bottom:2px solid #ad171c;'
-    //         else tkb_separator = '';
-    //         start_time_in_hr = r + 7;
-    //         //Thêm hàng, thời gian bắt đầu tiết
-    //         let tr = $('<tr style="height:1px;' + tkb_separator + '"><td class="starttimerow">' + start_time_in_hr + '</td>');
-    //         for (let c = 0; c < cols; c++) {
-    //             if ((c + 1) % 8) {
-    //                 count++;
-    //                 $('<td class="cellqh" id="' + (70 * (i - 1) * 14 + count + specialValue) + '">' + "+" + '<span class="tooltiptext"></span></td>').appendTo(tr);
-    //             } else {
-    //                 //divider
-    //                 $('<td style="height:0px; width: 15px; background-color: #fff"></td>').appendTo(tr);
-    //             }
-    //         }
-    //         tr.appendTo(tables[i]);
-    //     }
-    //
-    //
-    // $('</tbody></table>').appendTo(tables[i]);
-    // tkb_div.append(tables[i])
+    // Creating the main div container for the timetable
+    let tkb_div = $("<div id='tkb_div' class='flex flex-wrap justify-center flex-row items-center'></div>");
 
-    // }
-    tkb_div.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)    </label><input class="inputdate" id="datetimepicker" type="date" value="2023-08-14"></input><br></div>');
-    tkb_div.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>')
-    tkb_div.append('<div class="danhsachmonhoc_text"><strong>Các môn đã đăng ký<strong></div>')
-    tkb_div.append('<div class="danhsachmonhoc"></div>')
 
-    //Thêm vào trang
-    $("div.card-body.p-0 div.row.d-flex.justify-content-center.text-nowrap.pt-1").prepend(tkb_div)
-    console.log("Đã thêm bảng TKB")
+    // draw tables that have 20 tables 1 table represent 1 week, and 1 day have 14 rows
+
+    for (let i = 0; i < 32; i++) {
+        let table_id = "tkbPreview" + i + 1;
+        tables[i] = $('<table style="text-align:center;border-collapse: collapse;" class="tkb_preview_table" id="' + table_id + '"><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th></th></thead><tbody>');
+
+        for (let r = 0; r < rows; r++) {
+            let start_time_in_hr = r +1;
+            let tkb_separator = r % 2 ? 'border-bottom:2px solid #2fa4e7;' : '';
+            let tr = $('<tr style="height:1px;' + tkb_separator + '"><td class="starttimerow">' + start_time_in_hr + '</td>');
+
+            for (let c = 0; c < cols; c++) {
+                let id = "tkb" + i + r + c;
+                $('<td class="cellqh" id="' + (id) + '">+</td>').appendTo(tr); 
+            }
+
+
+
+            tr.appendTo(tables[i]);
+        }
+
+        $('</tbody></table>').appendTo(tables[i]);
+        tkb_div.append(tables[i]);
+
+
+
+    }
+    tkb_div.attr("style", "display:flex; flex-wrap: wrap; padding: 10px; justify-content: center; align-items: center;")
+    // Adding date picker and dropdown for lectures
+    let date_pickerSection = $("<div id= 'datepickersection'></div>");
+    date_pickerSection.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)</label><input class="inputdate" id="datetimepicker" type="date" value="2024-08-12"></input><br></div>');
+    date_pickerSection.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>');
+    date_pickerSection.append('<div class="danhsachmonhoc_text"><strong>Các môn đã đăng ký</strong></div>');
+    date_pickerSection.append('<div class="danhsachmonhoc"></div>');
+
+
+
+    // Adding the timetable to the page
+    $("div.card-body.p-0 div.row.d-flex.justify-content-center.text-nowrap.pt-1").prepend(date_pickerSection);
+    $("div.card-body.p-0 div.row.d-flex.justify-content-center.text-nowrap.pt-1").prepend(tkb_div);
+
+    let introduce = $("<div class='introduce'></div>")
+
+    introduce.append("<h3>Made by Minh Triet(Alex Ng)</h3>")
+    introduce.append("<h3>Tool hỗ trợ sắp xếp thời gian biểu PTITHCM</h3>")
+    introduce.append("<h3>1. Chọn thời gian bắt đầu của kì học mới</h3>")
+    introduce.append("<h3>2. Chọn môn học muốn đăng ký</h3>")
+    introduce.append("<h3>Note: Ô màu trắng thì chưa có môn nào chiếm chỗ</h3>")
+    introduce.append("<h3>Ô màu xanh thì đang có 1 môn, Ô màu đỏ là ô không hợp lệ(chứa 2 môn)</h3>")
+    introduce.append("<h3>Không chịu trách nhiệm dưới bất kì hình thức nào</h3>")
+    introduce.append("<h3>Mình mong sẽ nhận được feedbacks từ các bạn, facebook: https://fb.com/triet.nguyen.39904181 </h3>")
+    introduce.attr("style", "display:flex; ; padding: 10px; justify-content: center; align-items: center; flex-direction: column")
+
+
+
+    $("div.card-body.p-0 div.row.d-flex.justify-content-center.text-nowrap.pt-1").prepend(introduce);
+
+
 
 }
+
+
 
 
 
 function process() {
-    if (
-        $('#tkb_div').length == 0
-    ) {
-        drawTable()
+    if ($("#tkb_div").length == 0) {
+        drawTable();
     }
 
-    if (
-        subjects.size == 0 && nameStoring.size == 0
-    ) {
-        scraptSubjects()
+    if (subjects.size == 0) {
+        scraptSubjects();
     }
+
 }
+
+
+
 
 
 function reinitializeCheckboxInput() {
@@ -555,7 +756,7 @@ function reinitializeCheckboxInput() {
         }
 
         else {
-            const tableSubjects = $('tbody')[0]
+            const tableSubjects = $('tbody')[32]
             const rows = tableSubjects.children
             // delete all checkbox
             // delete all checkbox, consist old or new
@@ -578,6 +779,36 @@ function reinitializeCheckboxInput() {
             clearInterval(timer);
         }
     }, 200)
+    }
+
+
+
+
+
+function caculateDistanceTwoDays(day1, day2) {
+    const parsedDate1 = new Date(day1);
+    const parsedDate2 = new Date(day2);
+
+    // Calculate the difference in milliseconds
+    const differenceInMilliseconds = parsedDate2 - parsedDate1;
+
+    // Convert milliseconds to days
+    const millisecondsInOneDay = 1000 * 60 * 60 * 24;
+    const differenceInDays = differenceInMilliseconds / millisecondsInOneDay;
+
+    return Math.abs(differenceInDays);
 }
+
+
+
+
+// listener for choosing date in date tag
+
+$(document).ready(function() {
+    $(document).on('change', '.inputdate', function(event) {
+        dateStart = new Date(event.target.value);
+
+    })
+})
 
 
