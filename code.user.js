@@ -2,8 +2,7 @@
 // @name         Scheduling Subject Registration
 // @namespace    http://tampermonkey.net/
 // @version      2024-07-03
-// @description  try to take over the world!
-// @author       You
+// @author       Minh Triet (Alex Ng)
 // @match        https://uis.ptithcm.edu.vn/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @require      http://code.jquery.com/jquery-3.6.0.min.js
