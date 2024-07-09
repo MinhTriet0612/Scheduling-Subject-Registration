@@ -10,7 +10,7 @@ A helpful subject scheduling tool
 
 ## Guide, How to download? 
 * Download TempermMonkey Extension: https://github.com/quochung-cyou/QLDT_Enhancer
-* Link Script Download: greasyfork.org/en/scripts/500023-scheduling-subject-registration
+* Link Script Download: [greasyfork.org/en/scripts/500023-scheduling-subject-registration](https://greasyfork.org/en/scripts/500023-scheduling-subject-registration)
 * Guide Video: https://www.youtube.com/watch?v=WgHOjew35Sk
 > Require: Chrome version >= 120, or the same with other browsers. 
 
