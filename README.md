@@ -3,4 +3,7 @@
 # Scheduling subject Registration
 <hr style="border:2px solid gray">
 A helpful subject scheduling tool
-### Download Link: https://greasyfork.org/en/scripts/500023-scheduling-subject-registration
+
+## Author & Resource 
+* Minh Triet (AlexNg)
+* CSS, Structure được tham khảo từ anh Nguyễn Quốc Hưng, Link Repo: https://github.com/quochung-cyou/QLDT_Enhancer
