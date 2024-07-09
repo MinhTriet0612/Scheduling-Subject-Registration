@@ -6,7 +6,7 @@ A helpful subject scheduling tool
 
 ## Author & Resource 
 * Minh Triet (AlexNg)
-* CSS, Structure được tham khảo từ anh Nguyễn Quốc Hưng, Link Repo: https://github.com/quochung-cyou/QLDT_Enhancer
+* CSS, Structure được tham khảo từ mã nguồn của anh Nguyễn Quốc Hưng, Link Repo: https://github.com/quochung-cyou/QLDT_Enhancer
 
 ## Guide, How to download? 
 * Download TempermMonkey Extension: https://github.com/quochung-cyou/QLDT_Enhancer
