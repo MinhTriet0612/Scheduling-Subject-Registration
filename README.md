@@ -8,7 +8,7 @@ A Helpful Subject Scheduling Tool
 * CSS, Structure được tham khảo từ mã nguồn của anh Nguyễn Quốc Hưng, Link Repo: https://github.com/quochung-cyou/QLDT_Enhancer
 
 ## Guide, How to download? 
-* Download TempermMonkey Extension: https://github.com/quochung-cyou/QLDT_Enhancer
+* Download TempermMonkey Extension: [https://github.com/quochung-cyou/QLDT_Enhancer](https://www.tampermonkey.net/)
 * Link Script Download: [greasyfork.org/en/scripts/500023-scheduling-subject-registration](https://greasyfork.org/en/scripts/500023-scheduling-subject-registration)
 * Guide Video: https://www.youtube.com/watch?v=WgHOjew35Sk
 > Require: Chrome version >= 120, or the same with other browsers. 
