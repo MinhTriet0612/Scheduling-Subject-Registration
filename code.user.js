@@ -2,6 +2,10 @@
 // @name         Scheduling Subject Registration
 // @namespace    http://tampermonkey.net/
 // @version      2024-07-03
+<<<<<<< HEAD
+=======
+// @description  try to take over the world!
+>>>>>>> 05c5745 (done)
 // @author       Minh Triet (Alex Ng)
 // @match        https://uis.ptithcm.edu.vn/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -9,6 +13,7 @@
 // @grant        GM_addStyle
 // @grant        unsafeWindow
 // @run-at       document-start
+// @License      MIT
 
 
 // ==/UserScript==
@@ -340,14 +345,14 @@ const nameStoring = new Map();
 const storeCheckedSubjects = new Set();
 let dateStart = new Date( '2024-08-12' );
 
-const tables = Array.from({ length: 32 }, () => Array.from({ length: 14 }, () => Array.from({ length: 7 }, () => [])));
+const tables = Array.from({ length: 28 }, () => Array.from({ length: 14 }, () => Array.from({ length: 7 }, () => [])));
 
 
 function scraptSubjects() {
     let nameStoring = new Map();
     unsafeWindow.subjects = subjects;
     $(".custom-control").attr("style", "display :none !important");
-    const tableSubjects = $('tbody')[32]
+    const tableSubjects = $('tbody')[28]
     const rows = tableSubjects.children
 
     for (let i = 0; i < rows.length; i++) {
@@ -561,7 +566,7 @@ function updateTable(tables) {
         }
     }
 
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < 28; i++) {
         for (let r = 0; r < 14; r++) {
             for (let c = 0; c < 7; c++) {
                 let id = "tkb" + i + r + c;
@@ -666,7 +671,7 @@ function drawTable() {
 
     // draw tables that have 20 tables 1 table represent 1 week, and 1 day have 14 rows
 
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < 28; i++) {
         let table_id = "tkbPreview" + i + 1;
         tables[i] = $('<table style="text-align:center;border-collapse: collapse;" class="tkb_preview_table" id="' + table_id + '"><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th></th></thead><tbody>');
 
@@ -753,7 +758,7 @@ function reinitializeCheckboxInput() {
         }
 
         else {
-            const tableSubjects = $('tbody')[32]
+            const tableSubjects = $('tbody')[28]
             const rows = tableSubjects.children
             // delete all checkbox
             // delete all checkbox, consist old or new
@@ -798,9 +803,7 @@ function caculateDistanceTwoDays(day1, day2) {
 
 
 
-
 // listener for choosing date in date tag
-
 $(document).ready(function() {
     $(document).on('change', '.inputdate', function(event) {
         dateStart = new Date(event.target.value);
