@@ -8,16 +8,16 @@ A Helpful Subject Scheduling Tool
 * Tool giúp bạn trực quan hoá việc chọn môn bằng cách tự động điền lịch học của các môn vừa chọn vào bảng thời khoá biểu
 * Và nếu có vấn đề 2 môn trùng lịch nhau thì sẽ dễ nhận biết (hiện màu đỏ trên bảng thời khoá biểu)
 
+## Features 
+* Gồm hơn 28 bảng thời khoá biểu dành cho hơn 28 tuần(7 tháng) và mỗi bảng sẽ gồm 14 hàng đại diện cho 14 tiết học. Các bảng sẽ mô phỏng quá trình sắp xếp thời gian biểu của bạn, nếu bị trùng môn sẽ báo đỏ.
+* Tính năng lọc các môn học bằng nút dropdown (đang lỗi)
+* Có hover cho mỗi ô trên thời khoá biểu và nội dung bên trong hover sẽ chứa thông tin của môn học (mã - tên môn - lớp)
+
 ## Guide, How to download? 
 * Download TemperMonkey Extension: https://www.tampermonkey.net
 * Link Script Download: [greasyfork.org/en/scripts/500023-scheduling-subject-registration](https://greasyfork.org/en/scripts/500023-scheduling-subject-registration)
 * Guide Video: https://www.youtube.com/watch?v=WgHOjew35Sk
 > Require: Chrome version >= 120, or the same with other browsers. 
-
-## Features 
-* Gồm hơn 28 bảng thời khoá biểu dành cho hơn 28 tuần(7 tháng) và mỗi bảng sẽ gồm 14 hàng đại diện cho 14 tiết học. Các bảng sẽ mô phỏng quá trình sắp xếp thời gian biểu của bạn, nếu bị trùng môn sẽ báo đỏ.
-* Tính năng lọc các môn học bằng nút dropdown (đang lỗi)
-* Có hover cho mỗi ô trên thời khoá biểu và nội dung bên trong hover sẽ chứa thông tin của môn học (mã - tên môn - lớp)
 
 ## Technologies used
 * Tempermonkey (help embeding javascript script into specific web app) 
