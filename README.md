@@ -28,3 +28,6 @@ A Helpful Subject Scheduling Tool
 * Nếu các bạn đến từ trường khác muốn trải nghiệm tool mình thì liên hệ mình, mình sẽ sửa lại script cho tương thích
 * Rất mong nhận được sự góp ý của các bạn để được cải thiện hơn
 * Thông tin liên hệ: https://fb.com/triet.nguyen.39904181
+
+## Demo 
+<img src="https://github.com/MinhTriet0612/Scheduling-Subject-Registration/blob/main/demo.gif" width="500" />
