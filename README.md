@@ -30,4 +30,4 @@ A Helpful Subject Scheduling Tool
 * Thông tin liên hệ: https://fb.com/triet.nguyen.39904181
 
 ## Demo 
-<img src="https://github.com/MinhTriet0612/Scheduling-Subject-Registration/blob/main/demo1.gif" width="1000" />
+<img src="https://github.com/MinhTriet0612/Scheduling-Subject-Registration/blob/main/demo.gif" width="1000" />
