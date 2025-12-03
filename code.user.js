@@ -1,19 +1,21 @@
 // ==UserScript==
 // @name         Scheduling Subject Registration
 // @namespace    http://tampermonkey.net/
-// @version      2024-07-03
-
-// @author       Minh Triet (Alex Ng)
+// @version      2025-12-03
+// @description  tool helping alot with subject registation
+// @author       Minh Triet (Alex Ng) - updated by maihuybao
 // @match        https://uis.ptithcm.edu.vn/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @require      http://code.jquery.com/jquery-3.6.0.min.js
 // @grant        GM_addStyle
 // @grant        unsafeWindow
 // @run-at       document-start
-// @downloadURL  
-// @License      MIT
+// @license      MIT
 
 
+
+// @downloadURL https://update.greasyfork.org/scripts/500023/Scheduling%20Subject%20Registration.user.js
+// @updateURL https://update.greasyfork.org/scripts/500023/Scheduling%20Subject%20Registration.meta.js
 // ==/UserScript==
 
 
@@ -44,7 +46,7 @@ GM_addStyle(`
     }
 
 
-  
+
     html {
         background: #f2f2f2;
     }
@@ -341,7 +343,7 @@ const registeredSubjects = new Map();
 const subjects = new Map();
 const nameStoring = new Map();
 const storeCheckedSubjects = new Set();
-let dateStart = new Date( '2024-08-12' );
+let dateStart = new Date( '2026-02-26' );
 
 const tables = Array.from({ length: 28 }, () => Array.from({ length: 14 }, () => Array.from({ length: 7 }, () => [])));
 
@@ -350,11 +352,12 @@ function scraptSubjects() {
     let nameStoring = new Map();
     unsafeWindow.subjects = subjects;
     $(".custom-control").attr("style", "display :none !important");
-    const tableSubjects = $('tbody')[28]
+    const tableSubjects = $("app-dk-monhoc .card.border-primary table tbody")[28]
     const rows = tableSubjects.children
 
     for (let i = 0; i < rows.length; i++) {
         // enable checked for this input
+        console.log(rows[i].children)
         const subject = new Subject(
             rows[i].children[1].innerText,
             rows[i].children[2].innerText,
@@ -502,12 +505,13 @@ function addSubjectToTable(subject) {
 
         while (start <= end) {
             for (let i = item.time[0] - 1; i <= item.time[1] - 1; i++) {
+                console.log(`start: ${start} i: ${i} day: ${day} subject: ${subject.subjectCode}  tables: ${tables[start][i][day]}`)
+
                 tables[start][i][day - 2].push({
                     subjectCode: subject.subjectCode,
                     subjectName: subject.subjectName,
                     classCode: subject.classCode
                 });
-                // console.log(`start: ${start} i: ${i} day: ${day} subject: ${subject.subjectCode}  tables: ${tables[start][i][day]}`)
             }
             start++;
         }
@@ -656,19 +660,13 @@ function reformatRoutine(str) {
 }
 
 
-
-
 function drawTable() {
     let rows = 14; // Number of rows representing the periods
     let cols = 7; // Number of columns representing the days
     let tables = [];
-
     // Creating the main div container for the timetable
     let tkb_div = $("<div id='tkb_div' class='flex flex-wrap justify-center flex-row items-center'></div>");
-
-
     // draw tables that have 20 tables 1 table represent 1 week, and 1 day have 14 rows
-
     for (let i = 0; i < 28; i++) {
         let table_id = "tkbPreview" + i + 1;
         tables[i] = $('<table style="text-align:center;border-collapse: collapse;" class="tkb_preview_table" id="' + table_id + '"><thead> <th></th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th></th></thead><tbody>');
@@ -680,7 +678,7 @@ function drawTable() {
 
             for (let c = 0; c < cols; c++) {
                 let id = "tkb" + i + r + c;
-                $('<td class="cellqh" id="' + (id) + '">+</td>').appendTo(tr); 
+                $('<td class="cellqh" id="' + (id) + '">+</td>').appendTo(tr);
             }
 
 
@@ -697,7 +695,7 @@ function drawTable() {
     tkb_div.attr("style", "display:flex; flex-wrap: wrap; padding: 10px; justify-content: center; align-items: center;")
     // Adding date picker and dropdown for lectures
     let date_pickerSection = $("<div id= 'datepickersection'></div>");
-    date_pickerSection.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)</label><input class="inputdate" id="datetimepicker" type="date" value="2024-08-12"></input><br></div>');
+    date_pickerSection.append('<div class="chonngaydiv"><label for="datetimepicker">Chọn ngày bắt đầu tuần đầu tiên (Xem trong TKB tuần)</label><input class="inputdate" id="datetimepicker" type="date" value="2026-02-20"></input><br></div>');
     date_pickerSection.append('<select class="dropdownlecture"><option value="" class="label_dropdownlecture">Chọn môn</option></select>');
     date_pickerSection.append('<div class="danhsachmonhoc_text"><strong>Các môn đã đăng ký</strong></div>');
     date_pickerSection.append('<div class="danhsachmonhoc"></div>');
@@ -705,8 +703,8 @@ function drawTable() {
 
 
     // Adding the timetable to the page
-    $("div.card-body.p-0 div.row.d-flex.justify-content-center.text-nowrap.pt-1").prepend(date_pickerSection);
-    $("div.card-body.p-0 div.row.d-flex.justify-content-center.text-nowrap.pt-1").prepend(tkb_div);
+    $("app-dk-monhoc .card-body").first().prepend(date_pickerSection);
+    $("app-dk-monhoc .card-body").first().prepend(tkb_div);
 
     let introduce = $("<div class='introduce'></div>")
 
@@ -720,9 +718,8 @@ function drawTable() {
     introduce.append("<h3>Mình mong sẽ nhận được feedbacks từ các bạn, facebook: https://fb.com/triet.nguyen.39904181 </h3>")
     introduce.attr("style", "display:flex; ; padding: 10px; justify-content: center; align-items: center; flex-direction: column")
 
-
-
-    $("div.card-body.p-0 div.row.d-flex.justify-content-center.text-nowrap.pt-1").prepend(introduce);
+    console.log(introduce)
+    $("app-dk-monhoc .card-body").first().prepend(introduce);
 
 
 
